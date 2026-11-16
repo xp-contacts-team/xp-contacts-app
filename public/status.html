@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>Atlas API Status</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #12102a;
+        --card: #1c1940;
+        --line: rgba(255, 255, 255, 0.12);
+        --ink: #f7f5ff;
+        --muted: #a8a2c7;
+        --green: #6ee7b7;
+        --indigo: #818cf8;
+      }
+      * { box-sizing: border-box; }
+      body {
+        display: grid;
+        min-height: 100vh;
+        padding: 32px;
+        margin: 0;
+        font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at 12% 0%, rgba(129, 140, 248, 0.35), transparent 35%),
+          radial-gradient(circle at 92% 90%, rgba(217, 70, 239, 0.18), transparent 32%),
+          var(--bg);
+        place-items: center;
+      }
+      .card {
+        width: min(880px, 100%);
+        padding: 34px;
+        background: linear-gradient(160deg, rgba(42, 37, 88, 0.96), rgba(24, 21, 54, 0.98));
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.8);
+      }
+      .top { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+      .brand { display: flex; align-items: center; gap: 12px; }
+      .mark {
+        display: grid; width: 42px; height: 42px; font-size: 13px; font-weight: 800;
+        color: #fff; background: linear-gradient(145deg, #6366f1, #a855f7);
+        border-radius: 13px; place-items: center;
+      }
+      .brand strong { display: block; font-size: 17px; letter-spacing: 0.02em; }
+      .brand span { font-size: 10px; letter-spacing: 0.22em; color: var(--muted); }
+      .badge {
+        display: inline-flex; align-items: center; gap: 7px; padding: 7px 12px;
+        font-size: 11px; font-weight: 650; color: var(--green);
+        background: rgba(110, 231, 183, 0.08);
+        border: 1px solid rgba(110, 231, 183, 0.25); border-radius: 999px;
+      }
+      .dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; box-shadow: 0 0 0 4px rgba(110, 231, 183, 0.12); }
+      h1 { margin: 42px 0 8px; font-size: 38px; line-height: 1.1; letter-spacing: -0.035em; }
+      .subtitle { margin: 0; font-size: 13px; line-height: 1.7; color: var(--muted); }
+      .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 28px; }
+      .metric { padding: 16px; background: rgba(255, 255, 255, 0.045); border: 1px solid var(--line); border-radius: 14px; }
+      .metric span { display: block; font-size: 10px; color: var(--muted); }
+      .metric strong { display: block; margin-top: 7px; font-size: 22px; letter-spacing: -0.02em; }
+      .panel { margin-top: 22px; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+      .row { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 12px 16px; font-size: 11px; border-bottom: 1px solid var(--line); }
+      .row:last-child { border-bottom: 0; }
+      .row code { font-size: 10.5px; color: #c7d2fe; }
+      .ok { color: var(--green); }
+      .footer { display: flex; justify-content: space-between; gap: 12px; margin-top: 18px; font-size: 10px; color: var(--muted); }
+      a { color: #c7d2fe; }
+      @media (max-width: 640px) {
+        body { padding: 14px; }
+        .card { padding: 22px; border-radius: 18px; }
+        h1 { margin-top: 30px; font-size: 28px; }
+        .metrics { grid-template-columns: 1fr; }
+        .badge { font-size: 9px; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="card">
+      <div class="top">
+        <div class="brand">
+          <span class="mark">A</span>
+          <div><strong>Atlas</strong><span>通讯录 · API STATUS</span></div>
+        </div>
+        <span class="badge" id="badge"><span class="dot"></span><span id="badgeText">检查中</span></span>
+      </div>
+
+      <h1>服务运行正常</h1>
+      <p class="subtitle">阿里云 ECS · Docker Compose · Nginx · Python API · SQLite</p>
+
+      <div class="metrics">
+        <div class="metric"><span>联系人数量</span><strong id="count">—</strong></div>
+        <div class="metric"><span>API / 数据库</span><strong id="apiState">—</strong></div>
+        <div class="metric"><span>部署位置</span><strong>杭州</strong></div>
+      </div>
+
+      <div class="panel">
+        <div class="row"><span>GET <code>/api/health</code></span><span class="ok" id="healthState">—</span></div>
+        <div class="row"><span>GET <code>/api/contacts</code></span><span class="ok" id="contactsState">—</span></div>
+        <div class="row"><span>数据存储</span><span><code>SQLite /data/atlas.db</code></span></div>
+        <div class="row"><span>持久化卷</span><span><code>atlas-contacts_atlas-data</code></span></div>
+        <div class="row"><span>Web 服务</span><span><code>Nginx :80</code></span></div>
+      </div>
+
+      <div class="footer">
+        <span id="checked">正在读取 /api/health…</span>
+        <a href="/">返回通讯录</a>
+      </div>
+    </main>
+
+    <script>
+      const badge = document.getElementById('badgeText')
+      const count = document.getElementById('count')
+      const apiState = document.getElementById('apiState')
+      const healthState = document.getElementById('healthState')
+      const contactsState = document.getElementById('contactsState')
+      const checked = document.getElementById('checked')
+
+      async function refresh() {
+        const started = Date.now()
+        try {
+          const healthResponse = await fetch('/api/health', { cache: 'no-store' })
+          const health = await healthResponse.json()
+          const contactsResponse = await fetch('/api/contacts', { cache: 'no-store' })
+          const payload = await contactsResponse.json()
+          const elapsed = Date.now() - started
+          badge.textContent = 'ALL SYSTEMS OK'
+          count.textContent = String(health.contacts ?? payload.contacts?.length ?? 0)
+          apiState.textContent = '正常'
+          healthState.textContent = `200 · ${elapsed}ms`
+          contactsState.textContent = `200 · ${payload.contacts?.length ?? 0} 条`
+          checked.textContent = `最近检查：${new Date().toLocaleString('zh-CN')}`
+        } catch (error) {
+          badge.textContent = 'DEGRADED'
+          count.textContent = '—'
+          apiState.textContent = '连接失败'
+          healthState.textContent = 'ERROR'
+          contactsState.textContent = 'ERROR'
+          checked.textContent = `检查失败：${error.message}`
+        }
+      }
+
+      refresh()
+    </script>
+  </body>
+</html>
